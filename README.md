@@ -59,13 +59,3 @@ This integration supports UI configuration, no YAML required.
 
 ---
 
-## Contributors
-
-- GitHub: [@your-username](https://github.com/your-username)  
-- Issues and PRs are welcome
-
----
-
-## License
-
-MIT License
