@@ -3,7 +3,7 @@
   "domain": "istoreos",
   "country": "cn",
   "homeassistant": "2023.0.0",
-  "codeowners": ["@你的GitHub用户名"],
-  "documentation": "https://github.com/你的用户名/ha-istoreos",
+  "codeowners": ["SJMTIII"],
+  "documentation": "https://github.com/SJMTIII/istoreos",
   "iot_class": "local_polling"
 }
