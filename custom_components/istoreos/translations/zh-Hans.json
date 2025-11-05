@@ -1,0 +1,73 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "添加 iStoreOS 路由器",
+        "description": "请输入路由器的连接信息。",
+        "data": {
+          "host": "主机地址",
+          "username": "用户名",
+          "password": "密码"
+        }
+      }
+    },
+    "entry": {
+      "title": "iStoreOS 路由器",
+      "description": "已连接到 iStoreOS 路由器。"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "load_1min": {
+        "name": "CPU 负载（1分钟）"
+      },
+      "load_5min": {
+        "name": "CPU 负载（5分钟）"
+      },
+      "load_15min": {
+        "name": "CPU 负载（15分钟）"
+      },
+      "load_summary": {
+        "name": "CPU 负载概览"
+      },
+      "mem_used_percent": {
+        "name": "内存使用率"
+      },
+      "mem_used_mb": {
+        "name": "已用内存"
+      },
+      "mem_total_mb": {
+        "name": "总内存"
+      },
+      "mem_available_mb": {
+        "name": "可用内存"
+      },
+      "mem_free_mb": {
+        "name": "空闲内存"
+      },
+      "mem_summary": {
+        "name": "内存概览"
+      },
+      "online_devices": {
+        "name": "在线设备数"
+      },
+      "uptime_human": {
+        "name": "系统运行时间"
+      },
+      "wan_ip": {
+        "name": "WAN IP 地址"
+      },
+      "connections": {
+        "name": "连接数"
+      }
+    },
+    "button": {
+      "reboot": {
+        "name": "重启路由器"
+      },
+      "reconnect": {
+        "name": "重新连接 WAN"
+      }
+    }
+  }
+}
