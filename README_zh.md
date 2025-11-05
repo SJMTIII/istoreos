@@ -1,5 +1,5 @@
 # iStoreOS 集成 for Home Assistant
-
+[English](README.md) | [中文](README_zh.md)
 ## 简介
 
 这是一个适用于 Home Assistant 的 iStoreOS 自定义集成，支持从 iStoreOS 路由器获取设备信息、网络状态等数据，并以优雅的方式展示在仪表盘中。
