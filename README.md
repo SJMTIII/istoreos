@@ -15,7 +15,6 @@ This is a custom integration for Home Assistant that connects to iStoreOS router
 - Display device name, IP, MAC, online status  
 - Multi-language support (English/Chinese)  
 - UI configuration flow (no YAML required)  
-- Official brand icons submitted to Home Assistant brand library
 
 ---
 
