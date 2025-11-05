@@ -1,8 +1,8 @@
 {
-  "name": "iStoreOS Integration",
+  "name": "iStoreOS",
   "domain": "istoreos",
   "country": "cn",
-  "homeassistant": "2023.0.0",
+  "homeassistant": "2021.12.0",
   "codeowners": ["SJMTIII"],
   "documentation": "https://github.com/SJMTIII/istoreos",
   "iot_class": "local_polling"
