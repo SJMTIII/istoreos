@@ -6,11 +6,6 @@
 
 This is a custom integration for Home Assistant that connects to iStoreOS routers, providing device info, network status, and elegant dashboard presentation.
 
-# iStoreOS Integration for Home Assistant
-
-## Introduction
-
-This is a custom integration for Home Assistant that connects to iStoreOS routers, providing device info, network status, and elegant dashboard presentation.
 
 ---
 
