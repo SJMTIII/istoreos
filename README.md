@@ -1,5 +1,5 @@
 # iStoreOS Integration for Home Assistant
-![iStoreOS Logo](images/https://private-user-images.githubusercontent.com/123294890/509940000-2f8623da-ff5e-48f5-bdce-884f1fea8f91.png)
+
 [English](README.md) | [中文](README_zh.md)
 
 ## Introduction
