@@ -1,0 +1,9 @@
+{
+  "name": "iStoreOS Integration",
+  "domain": "istoreos",
+  "country": "cn",
+  "homeassistant": "2023.0.0",
+  "codeowners": ["@你的GitHub用户名"],
+  "documentation": "https://github.com/你的用户名/ha-istoreos",
+  "iot_class": "local_polling"
+}
