@@ -59,6 +59,9 @@
       },
       "connections": {
         "name": "连接数"
+      },
+      "cpu_temperature": {
+        "name": "CPU温度"
       }
     },
     "button": {

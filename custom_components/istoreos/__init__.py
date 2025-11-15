@@ -20,7 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
 
-    fetcher = DataFetcher(host, username, password)
+    fetcher = DataFetcher(host, username, password,hass)
     coordinator = iStoreOSDataUpdateCoordinator(hass, fetcher)
     await coordinator.async_config_entry_first_refresh()
 

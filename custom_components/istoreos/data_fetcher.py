@@ -14,12 +14,14 @@ def parse_uptime(uptime_str: str):
     return 0, 0, 0
 
 class DataFetcher:
-    def __init__(self, host, username, password):
+    def __init__(self, host, username, password,hass):
         self._host = host
         self._username = username
         self._password = password
         self._session = aiohttp.ClientSession()
         self._token = None
+        self._hass = hass
+        self._online_devices_mac = None
 
     async def login(self):
         url = f"http://{self._host}/cgi-bin/luci/rpc/auth"
@@ -96,10 +98,23 @@ class DataFetcher:
         # Online devices
         arp_data = await self.rpc_exec("cat /proc/net/arp")
         arp_str = arp_data.get("result", "")
-        result["online_devices"] = sum(
-            1 for line in arp_str.splitlines()
-            if "br-lan" in line and "0x2" in line
-        )
+        mac_list=[1 for line in arp_str.splitlines()
+                if "br-lan" in line and "0x2" in line]
+        if self._online_devices_mac is None:
+            self._online_devices_mac = mac_list
+        else:
+            new_online_macs = list(set(mac_list) - set(self._online_devices_mac))
+            if len(new_online_macs) > 0:
+                _LOGGER.info("检测到新设备连接: %s", new_online_macs)
+                for mac in new_online_macs:
+                    self._hass.bus.async_fire("istoreos_device_connected", {"mac": mac})
+            new_offline_macs = list(set(self._online_devices_mac) - set(mac_list))
+            if len(new_offline_macs) > 0:
+                _LOGGER.info("检测到设备断开: %s", new_offline_macs)
+                for mac in new_offline_macs:
+                    self._hass.bus.async_fire("istoreos_device_disconnected", {"mac": mac})
+            self._online_devices_mac = mac_list
+        result["online_devices"] = len(self._online_devices_mac)
 
         # WAN IP
         wan_ip = None
@@ -117,6 +132,11 @@ class DataFetcher:
         conn_data = await self.rpc_exec("cat /proc/sys/net/netfilter/nf_conntrack_count")
         conn_str = conn_data.get("result", "").strip()
         result["connections"] = int(conn_str) if conn_str.isdigit() else None
+
+        # CPU Temperature
+        temp_data = await self.rpc_exec("cat /sys/class/thermal/thermal_zone0/temp")
+        temp_str = temp_data.get("result", "").strip()
+        result["cpu_temperature"] = round(int(temp_str) / 1000, 2) if temp_str.isdigit() else None
 
         return result
 
