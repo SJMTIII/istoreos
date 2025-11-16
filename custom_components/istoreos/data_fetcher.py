@@ -4,6 +4,7 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
+
 def parse_uptime(uptime_str: str):
     match = re.search(r"up\s+(\d+)\s+days?,\s+(\d+):(\d+)", uptime_str)
     if match:
@@ -13,8 +14,9 @@ def parse_uptime(uptime_str: str):
         return 0, *map(int, match.groups())
     return 0, 0, 0
 
+
 class DataFetcher:
-    def __init__(self, host, username, password,hass):
+    def __init__(self, host, username, password, hass):
         self._host = host
         self._username = username
         self._password = password
@@ -25,7 +27,11 @@ class DataFetcher:
 
     async def login(self):
         url = f"http://{self._host}/cgi-bin/luci/rpc/auth"
-        payload = {"id": 1, "method": "login", "params": [self._username, self._password]}
+        payload = {
+            "id": 1,
+            "method": "login",
+            "params": [self._username, self._password],
+        }
         async with self._session.post(url, json=payload) as resp:
             data = await resp.json()
             self._token = data.get("result")
@@ -57,49 +63,65 @@ class DataFetcher:
         uptime_str = uptime_data.get("result", "")
         result["uptime_raw"] = uptime_str.strip()
 
-        load_match = re.search(r"load average: ([0-9.]+), ([0-9.]+), ([0-9.]+)", uptime_str)
+        load_match = re.search(
+            r"load average: ([0-9.]+), ([0-9.]+), ([0-9.]+)", uptime_str
+        )
         if load_match:
             load1, load5, load15 = map(float, load_match.groups())
-            result.update({
-                "load_1min": load1,
-                "load_5min": load5,
-                "load_15min": load15,
-                "load_summary": f"{load1} / {load5} / {load15}"
-            })
+            result.update(
+                {
+                    "load_1min": load1,
+                    "load_5min": load5,
+                    "load_15min": load15,
+                    "load_summary": f"{load1} / {load5} / {load15}",
+                }
+            )
 
         days, hours, minutes = parse_uptime(uptime_str)
-        result.update({
-            "uptime_days": days,
-            "uptime_hours": hours,
-            "uptime_minutes": minutes,
-            "uptime_human": f"{days} 天 {hours} 小时" if days else f"{hours} 小时 {minutes} 分钟"
-        })
+        result.update(
+            {
+                "uptime_days": days,
+                "uptime_hours": hours,
+                "uptime_minutes": minutes,
+                "uptime_human": f"{days} 天 {hours} 小时"
+                if days
+                else f"{hours} 小时 {minutes} 分钟",
+            }
+        )
 
         # Memory
         mem_data = await self.rpc_exec("free")
         mem_str = mem_data.get("result", "")
-        mem_match = re.search(r"Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+(\d+)\s+(\d+)", mem_str)
+        mem_match = re.search(
+            r"Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+(\d+)\s+(\d+)", mem_str
+        )
         if mem_match:
             total, used, free, buff_cache, available = map(int, mem_match.groups())
             used_percent = round(used / total * 100, 2)
-            result.update({
-                "mem_total": total,
-                "mem_used": used,
-                "mem_free": free,
-                "mem_available": available,
-                "mem_used_percent": used_percent,
-                "mem_used_mb": round(used / 1024, 1),
-                "mem_total_mb": round(total / 1024, 1),
-                "mem_free_mb": round(free / 1024, 1),
-                "mem_available_mb": round(available / 1024, 1),
-                "mem_summary": f"{round(used / 1024, 1)} MB / {round(total / 1024, 1)} MB ({used_percent}%)"
-            })
+            result.update(
+                {
+                    "mem_total": total,
+                    "mem_used": used,
+                    "mem_free": free,
+                    "mem_available": available,
+                    "mem_used_percent": used_percent,
+                    "mem_used_mb": round(used / 1024, 1),
+                    "mem_total_mb": round(total / 1024, 1),
+                    "mem_free_mb": round(free / 1024, 1),
+                    "mem_available_mb": round(available / 1024, 1),
+                    "mem_summary": f"{round(used / 1024, 1)} MB / {round(total / 1024, 1)} MB ({used_percent}%)",
+                }
+            )
 
         # Online devices
         arp_data = await self.rpc_exec("cat /proc/net/arp")
         arp_str = arp_data.get("result", "")
-        mac_list=[1 for line in arp_str.splitlines()
-                if "br-lan" in line and "0x2" in line]
+        mac_list = []
+        for line in arp_str.splitlines():
+            if "br-lan" in line and "0x2" in line:
+                parts = line.split()
+                if len(parts) >= 4:
+                    mac_list.append(parts[3])
         if self._online_devices_mac is None:
             self._online_devices_mac = mac_list
         else:
@@ -112,7 +134,9 @@ class DataFetcher:
             if len(new_offline_macs) > 0:
                 _LOGGER.info("检测到设备断开: %s", new_offline_macs)
                 for mac in new_offline_macs:
-                    self._hass.bus.async_fire("istoreos_device_disconnected", {"mac": mac})
+                    self._hass.bus.async_fire(
+                        "istoreos_device_disconnected", {"mac": mac}
+                    )
             self._online_devices_mac = mac_list
         result["online_devices"] = len(self._online_devices_mac)
 
@@ -129,14 +153,18 @@ class DataFetcher:
         result["wan_ip"] = wan_ip
 
         # Connections
-        conn_data = await self.rpc_exec("cat /proc/sys/net/netfilter/nf_conntrack_count")
+        conn_data = await self.rpc_exec(
+            "cat /proc/sys/net/netfilter/nf_conntrack_count"
+        )
         conn_str = conn_data.get("result", "").strip()
         result["connections"] = int(conn_str) if conn_str.isdigit() else None
 
         # CPU Temperature
         temp_data = await self.rpc_exec("cat /sys/class/thermal/thermal_zone0/temp")
         temp_str = temp_data.get("result", "").strip()
-        result["cpu_temperature"] = round(int(temp_str) / 1000, 2) if temp_str.isdigit() else None
+        result["cpu_temperature"] = (
+            round(int(temp_str) / 1000, 2) if temp_str.isdigit() else None
+        )
 
         return result
 
