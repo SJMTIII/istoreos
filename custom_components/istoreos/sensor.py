@@ -11,6 +11,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         IStoreOSSensor(hass, config_entry, fetcher, "load_5min", "load"),
         IStoreOSSensor(hass, config_entry, fetcher, "load_15min", "load"),
         IStoreOSSensor(hass, config_entry, fetcher, "load_summary", None),
+        IStoreOSSensor(hass, config_entry, fetcher, "cpu_temperature", "°C"),
 
         # 内存
         IStoreOSSensor(hass, config_entry, fetcher, "mem_used_percent", "%"),
@@ -58,6 +59,7 @@ class IStoreOSSensor(SensorEntity):
             "connections": "mdi:connection",
             "online_devices": "mdi:lan-connect",
             "uptime_human": "mdi:clock-outline",
+            "cpu_temperature": "mdi:thermometer",
         }.get(key, "mdi:router-network")
 
     async def async_update(self):
